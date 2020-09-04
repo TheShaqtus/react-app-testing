@@ -1,0 +1,30 @@
+pool:
+    name: Azure Pipelines
+    demands: npm
+variables:
+    npm_config_cache: "$(Pipeline.Workspace)/.npm"
+
+steps:
+    - task: Cache@2
+      displayName: Cache
+      inputs:
+          key: "npm | “$(Agent.OS)” | $(Build.SourcesDirectory)/HoneyBee/package.json"
+          path: "$(npm_config_cache)"
+          cacheHitVar: CacheRestored
+
+    - task: Npm@1
+      displayName: "npm ci --cache $(npm_config_cache)"
+      inputs:
+          command: custom
+          workingDir: ./HoneyBee
+          verbose: false
+          customCommand: "ci --cache $(npm_config_cache)"
+      condition: ne(variables['CacheRestored'], 'true')
+
+    - task: Npm@1
+      displayName: "npm build"
+      inputs:
+          command: custom
+          workingDir: ./HoneyBee
+          verbose: false
+          customCommand: "run build"
