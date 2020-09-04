@@ -1,5 +1,6 @@
 pool:
     name: Azure Pipelines
+    vmImage: windows-latest
     demands: npm
 variables:
     npm_config_cache: "$(Pipeline.Workspace)/.npm"
@@ -8,7 +9,7 @@ steps:
     - task: Cache@2
       displayName: Cache
       inputs:
-          key: "npm | “$(Agent.OS)” | $(Build.SourcesDirectory)/HoneyBee/package.json"
+          key: "npm | “$(Agent.OS)” | $(Build.SourcesDirectory)/package.json"
           path: "$(npm_config_cache)"
           cacheHitVar: CacheRestored
 
@@ -16,7 +17,6 @@ steps:
       displayName: "npm ci --cache $(npm_config_cache)"
       inputs:
           command: custom
-          workingDir: ./HoneyBee
           verbose: false
           customCommand: "ci --cache $(npm_config_cache)"
       condition: ne(variables['CacheRestored'], 'true')
@@ -25,6 +25,5 @@ steps:
       displayName: "npm build"
       inputs:
           command: custom
-          workingDir: ./HoneyBee
           verbose: false
           customCommand: "run build"
