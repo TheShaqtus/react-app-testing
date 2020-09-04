@@ -3,7 +3,7 @@ pool:
     vmImage: windows-latest
     demands: npm
 variables:
-    npm_config_cache: "$(Pipeline.Workspace)/.npm"
+    npm_config_cache: "$(Pipeline.Workspace)/node_modules"
 
 steps:
     - task: Cache@2
@@ -14,11 +14,10 @@ steps:
           cacheHitVar: CacheRestored
 
     - task: Npm@1
-      displayName: "npm ci --cache $(npm_config_cache)"
+      displayName: "npm install"
       inputs:
-          command: custom
+          command: install
           verbose: false
-          customCommand: "ci --cache $(npm_config_cache)"
       condition: ne(variables['CacheRestored'], 'true')
 
     - task: Npm@1
